@@ -1,0 +1,109 @@
+// carrinho.js
+// Sistema de carrinho de compras estilo Shopee (terminal)
+
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+let carrinho = [];
+
+function menu() {
+  console.log(`\n===== CARRINHO DE COMPRAS =====
+1 - Adicionar produto
+2 - Listar produtos
+3 - Remover produto
+4 - Atualizar quantidade
+5 - Ver total
+0 - Sair`);
+
+  rl.question('Escolha uma opção: ', opcao => {
+    switch(opcao) {
+      case '1': adicionarProduto(); break;
+      case '2': listarProdutos(); break;
+      case '3': removerProduto(); break;
+      case '4': atualizarQuantidade(); break;
+      case '5': verTotal(); break;
+      case '0': rl.close(); break;
+      default:
+        console.log('Opção inválida!');
+        menu();
+    }
+  });
+}
+
+function adicionarProduto() {
+  rl.question('Nome do produto: ', nome => {
+    rl.question('Preço: ', preco => {
+      rl.question('Quantidade: ', quantidade => {
+        carrinho.push({
+          nome,
+          preco: parseFloat(preco),
+          quantidade: parseInt(quantidade)
+        });
+        console.log('Produto adicionado!');
+        menu();
+      });
+    });
+  });
+}
+
+function listarProdutos() {
+  console.log('\n=== PRODUTOS NO CARRINHO ===');
+  if (carrinho.length === 0) {
+    console.log('Carrinho vazio!');
+  } else {
+    carrinho.forEach((item, index) => {
+      console.log(`${index} - ${item.nome} | R$ ${item.preco.toFixed(2)} | Qtd: ${item.quantidade}`);
+    });
+  }
+  menu();
+}
+
+function removerProduto() {
+  listarProdutos();
+  rl.question('Digite o índice do produto para remover: ', index => {
+    if (carrinho[index]) {
+      carrinho.splice(index, 1);
+      console.log('Produto removido!');
+    } else {
+      console.log('Índice inválido!');
+    }
+    menu();
+  });
+}
+
+function atualizarQuantidade() {
+  listarProdutos();
+  rl.question('Digite o índice do produto: ', index => {
+    if (carrinho[index]) {
+      rl.question('Nova quantidade: ', qtd => {
+        carrinho[index].quantidade = parseInt(qtd);
+        console.log('Quantidade atualizada!');
+        menu();
+      });
+    } else {
+      console.log('Índice inválido!');
+      menu();
+    }
+  });
+}
+
+function verTotal() {
+  let total = 0;
+  let totalItens = 0;
+
+  carrinho.forEach(item => {
+    total += item.preco * item.quantidade;
+    totalItens += item.quantidade;
+  });
+
+  console.log(`\nTotal de itens: ${totalItens}`);
+  console.log(`Valor total: R$ ${total.toFixed(2)}`);
+
+  menu();
+}
+
+menu();
